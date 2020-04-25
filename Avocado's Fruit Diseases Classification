@@ -1,0 +1,133 @@
+### Cargar paqueterías ###
+import keras
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
+from keras.models import load_model
+from keras.preprocessing import image
+from keras import optimizers
+from sklearn.model_selection import train_test_split
+from tqdm import tqdm
+from keras import backend as K
+
+### Interrumpir sesiones de Keras activas ###
+K.clear_session()
+ 
+### Leer las etiquetas de las imágenes ###
+train = pd.read_csv ("D:/Avocado labels.csv")
+train.head()
+train.columns
+ 
+### Leer todas las imágenes,normalizar a 500 x 500px y los valores de los pixeles se encuentren del 0 - 1 ###
+### Se vectorizan todas las imágenes ###
+### Se define "X" (datos de entrenamiento) ###
+train_image = []
+for i in tqdm(range(train.shape[0])):
+     img = image.load_img("/Pictures/Avocados/"+train['Identification'][i]+'.jpg',target_size=(500,500,3))
+     img = image.img_to_array(img)
+     img = img/255
+     train_image.append(img)
+X = np.array(train_image)
+
+### Revisar las nuevas características ###
+X.shape
+ 
+### Mostrar una imagen y que muestre la etiqueta asignada; el 9 significa el número de imagen a mostrar ###
+plt.imshow(X[9])
+train['Condition'][9]
+ 
+### Se define "y" (etiquetas de identificación) y se vectorizan todas las etiquetas ###
+y = np.array(train.drop(['Identification','Condition'],axis = 1))
+y.shape
+ 
+### Se definen los datos de entrenamiento y de validación ###
+### El 70 % serán los datos de entrada y el 30 % de validación ###
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0, test_size=0.3)
+ 
+### Se crea el modelo de redes neuronales convolucionales ### 
+model = Sequential()
+model.add(Conv2D(filters=16, kernel_size=(3, 3), activation="relu", input_shape=(500,500,3)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+ 
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+ 
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation="relu"))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+ 
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+ 
+model.add(Flatten())
+ 
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5))
+ 
+model.add(Dense(32, activation='relu'))
+model.add(Dropout(0.5))
+ 
+model.add(Dense(3, activation='sigmoid'))
+ 
+### Se revisa el modelo creado ###
+model.summary()
+ 
+### Compilar el modelo ###
+model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
+ 
+### Correr el modelo ### 
+history = model.fit(X_train, y_train, epochs=30, validation_data=(X_test, y_test), batch_size=32)
+ 
+### Guardar el modelo en la memoria de almacenamiento de la PC ###
+dir = ('C:/Users/ulyss/Documents/Tesis/Clasificador/Entrenamiento RD4')
+if not os.path.exists(dir):
+     os.mkdir(dir)
+     model.save('Clasificador/Entrenamiento RD4/modelo.h5')
+     model.save_weights('/Entrenamiento RD4/pesos.h5')
+     
+### Cargar el modelo (El modelo que se va a cargar ya no necesita volver a entrenarse) ###
+modelo = ("Clasificador/Entrenamiento RD4/modelo.h5")
+pesos_modelo = ("/Clasificador/Entrenamiento RD4/pesos.h5")
+model = load_model(modelo)
+
+model.load_weights(pesos_modelo)
+### Graficar la precisión y pérdida del modelo ###
+def plot_LearningCurve(history,epoch):
+    epoch_range = range(1, epoch+1)
+    plt.plot(epoch_range, history.history['accuracy'])
+    plt.plot(epoch_range, history.history['val_accuracy'])
+    plt.title('Precisión del Modelo')
+    plt.ylabel('Precisión')
+    plt.xlabel('Épocas')
+    plt.legend(['Entrenamiento', 'Validación'], loc = 'upper left')
+    plt.show()
+    ###error###
+    plt.plot(epoch_range, history.history['loss'])
+    plt.plot(epoch_range, history.history['val_loss'])
+    plt.title('Pérdida del Modelo')
+    plt.ylabel('Pérdida')
+    plt.xlabel('Épocas')
+    plt.legend(['Entrenaiento', 'Validación'], loc = 'upper left')
+    plt.show()
+    
+plot_LearningCurve(history, 30)
+
+### Leer y probar el modelo con imágenes variadas en resolución de 500 x 500px ###
+img2 = image.load_img("Pictures/Avocados/Avocado 0158.jpg", target_size = (500,500,3))
+img2 = image.img_to_array(img2)
+img2 = img2/255.0
+
+classes1 = np.array(train.columns[2:])
+proba = model.predict(img2.reshape(1,500,500,3))
+top_3 =np.argsort(proba[0])[:-4:-1]
+for i in range(3):
+    print("{}".format(classes1[top_3[i]])+ "({:.3})".format(proba[0][top_3[i]]))
+    
+plt.imshow(img2)
