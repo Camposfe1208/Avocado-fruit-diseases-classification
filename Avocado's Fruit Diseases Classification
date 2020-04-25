@@ -18,7 +18,7 @@ from keras import backend as K
 K.clear_session()
  
 ### Leer las etiquetas de las imágenes ###
-train = pd.read_csv ("D:/Avocado labels.csv")
+train = pd.read_csv ("/Avocado labels.csv")
 train.head()
 train.columns
  
@@ -36,7 +36,7 @@ X = np.array(train_image)
 ### Revisar las nuevas características ###
 X.shape
  
-### Mostrar una imagen y que muestre la etiqueta asignada; el 9 significa el número de imagen a mostrar ###
+### Mostrar una imagen y que imprima la etiqueta asignada; el 9 significa el número de imagen a mostrar ###
 plt.imshow(X[9])
 train['Condition'][9]
  
@@ -82,19 +82,19 @@ model.summary()
 ### Compilar el modelo ###
 model.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
  
-### Correr el modelo ### 
+### Entrenar el modelo ### 
 history = model.fit(X_train, y_train, epochs=30, validation_data=(X_test, y_test), batch_size=32)
  
 ### Guardar el modelo en la memoria de almacenamiento de la PC ###
-dir = ('C:/Users/ulyss/Documents/Tesis/Clasificador/Entrenamiento RD4')
+dir = ('/Clasificador/Entrenamiento')
 if not os.path.exists(dir):
      os.mkdir(dir)
-     model.save('Clasificador/Entrenamiento RD4/modelo.h5')
-     model.save_weights('/Entrenamiento RD4/pesos.h5')
+     model.save('/Clasificador/Entrenamiento/modelo.h5')
+     model.save_weights('Clasificador/Entrenamiento/pesos.h5')
      
 ### Cargar el modelo (El modelo que se va a cargar ya no necesita volver a entrenarse) ###
-modelo = ("Clasificador/Entrenamiento RD4/modelo.h5")
-pesos_modelo = ("/Clasificador/Entrenamiento RD4/pesos.h5")
+modelo = ("/Clasificador/Entrenamiento/modelo.h5")
+pesos_modelo = ("/Clasificador/Entrenamiento/pesos.h5")
 model = load_model(modelo)
 
 model.load_weights(pesos_modelo)
