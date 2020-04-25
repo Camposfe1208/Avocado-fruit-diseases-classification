@@ -1,5 +1,7 @@
 # Avocado-fruit-diseases-classification
-Campos Ferreira Ulises Enrique. Universidad Autónoma Chapingo.
+
+### Campos Ferreira Ulises Enrique. Universidad Autónoma Chapingo.
+
 On this repo, you'll find the project that I did for my bachelor's degree.
 It consists of high quality images of the most post-harvest diseases on avocado's fruit (scab and anthracnosis) and healthy fruits.
 
