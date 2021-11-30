@@ -9,6 +9,6 @@ The dataset consists of 569 original images for training and validation; due to 
 
 Otherwise, 100 independent images of the model were used to evaluate the disease classifier.
 
-The code is shown in the Python file ["Avocado's Fruit Diseases Classification.py"](https://github.com/Camposfe1208/Avocado-fruit-diseases-classification/blob/master/Avocado's%20Fruit%20Diseases%20Classification.py)
+The code is shown in the Python file [Avocado's Fruit Diseases Classification.py](https://github.com/Camposfe1208/Avocado-fruit-diseases-classification/blob/master/Avocado's%20Fruit%20Diseases%20Classification.py)
 
-The dataset is in: https://www.kaggle.com/camposfe1/clasifiacin-de-enfermedades-del-aguacatero
+The dataset is in [my personal Kaggle page.](https://www.kaggle.com/camposfe1/clasifiacin-de-enfermedades-del-aguacatero)
